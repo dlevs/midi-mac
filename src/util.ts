@@ -1,19 +1,20 @@
-import _ from 'lodash'
-
 /**
- * Lodash's throttle function, but for functions that return promises.
+ * A promise queue.
  *
- * Not only will the throttling wait the minimum `wait` time before
- * allowing another execution, it will also wait for the last promise
- * to have completed.
+ * Only a single promise may run at a time.
+ * One other promise may be queued up.
+ *
+ * If multiple promises get queued up, only the last is executed
+ * once the pending one resolves.
+ *
+ * It's like throttling, but based on promise completion instead
+ * of a wait time.
  */
 export const promiseThrottle = <
   P extends Promise<any>,
   PC extends (...args: any[]) => P
 >(
-  promiseCreator: PC,
-  wait: number,
-  options: _.ThrottleSettings
+  promiseCreator: PC
 ) => {
   let current: P | null = null
   let next: (() => P) | null = null
@@ -41,5 +42,5 @@ export const promiseThrottle = <
     return exec(thisNext)
   }) as PC
 
-  return _.throttle(wrappedPromiseCreator, wait, options)
+  return wrappedPromiseCreator
 }

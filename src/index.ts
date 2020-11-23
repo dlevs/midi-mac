@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import midi from 'midi'
 import parseMidiMessage from 'parse-midi'
 import loudness from 'loudness'
@@ -6,14 +5,7 @@ import brightness from 'brightness'
 import execa from 'execa'
 import { promiseThrottle } from './util'
 
-const THROTTLE_MS = 20
-
-const setVolumeThrottled = promiseThrottle(loudness.setVolume, THROTTLE_MS, {
-  leading: true,
-})
-const setBrightnessThrottled = _.throttle(brightness.set, THROTTLE_MS, {
-  leading: true,
-})
+const setVolumeThrottled = promiseThrottle(loudness.setVolume)
 
 const handlers: {
   [messageType: string]: {
@@ -22,7 +14,7 @@ const handlers: {
 } = {
   controlchange: {
     5: ({ value }) => setVolumeThrottled((value / 127) * 100),
-    6: ({ value }) => setBrightnessThrottled(value / 127),
+    6: ({ value }) => brightness.set(value / 127),
   },
   noteon: {
     62: () => execa('open', ['-a', 'Terminal']),
