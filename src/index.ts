@@ -7,6 +7,7 @@ new midi.Input()
     'message',
     function handleMidiMessage(deltaTime: number, message: Uint8Array) {
       const parsed = parseMidiMessage(message)
+      // TODO: This is silly - the MIDI message is parsed, and then made generic again. Update `parse-midi` package.
       const normalised =
         parsed.messageType === 'controlchange'
           ? {
